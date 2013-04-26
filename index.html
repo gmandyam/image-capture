@@ -25,7 +25,7 @@
       ,   format:       'markdown'
       };
     </script>
-    <script src='./respec-w3c-common-markdown-alpha.js' class='remove' async></script>
+    <script src='./respec.js' class='remove' async></script>
   </head>
   <body>
     <section id='sotd'>
@@ -52,29 +52,25 @@
     <dd>The MediaStream passed into the constructor</dd>
     <dt>attribute EventHandler onphoto</dt>
     <dd>Register/unregister for photo events of type <code>BlobEvent</code>. The handler should expect to get a <code>BlobEvent</code> object as its first parameter.</dd>
-    <dt>attribute EventHandler onphotoerror</dt>
-    <dd>Register/unregister for photo error events of type <code>PhotoErrorEvent</code>. The handler should expect to get a <code>PhotoError</code> object as its first parameter.</dd>
+    <dt>attribute EventHandler onerror</dt>
+    <dd>Register/unregister for Image Capture error events of type <code>ImageCaptureErrorEvent</code>. The handler should expect to get a <code>ImageCaptureError</code> object as its first parameter.</dd>
     <dt>attribute EventHandler onphotosettingschange</dt>
     <dd>Register/unregister for photo settings change events of type <code>SettingsChangeEvent</code>.</dd>
-    <dt>attribute EventHandler onphotosettingserror</dt>
-    <dd>Register/unregister for photo settings error events of type <code>SettingsErrorEvent</code>.</dd>
     <dt>attribute EventHandler onframegrab</dt>
     <dd>Register/unregister for frame capture events of type <code>FrameGrabEvent</code>. The handler should expect to get a <code>FrameGrabEvent</code> object as its first parameter.</dd>
-    <dt>attribute EventHandler onframegraberror</dt>
-    <dd>Register/unregister for frame capture errors of type <code>FrameGrabErrorEvent</code>.</dd>
-    <dt>void setPhotoSettings(PhotoSettings? photoSettings)</dt>
-    <dd>When the <code>setPhotoSettings()</code> method of an <code>ImageCapture</code> object is invoked, then
+    <dt>void setOptions(PhotoSettings? photoSettings)</dt>
+    <dd>When the <code>setOptions()</code> method of an <code>ImageCapture</code> object is invoked, then
     then a valid <code>PhotoSettings</code> object <em title="must" class="rfc2119">must</em> be passed in the method to the
     <code>ImageCapture</code> object.  If the UA can successfully apply the settings, then the UA <em title="must" class="rfc2119">must</em> fire a <code>SettingsChangeEvent</code> event at the 
     <code>onphotosettingschange</code> event handler (if specified).  If the UA cannot successfully apply the settings, then the UA
-    <em title="must" class="rfc2119">must</em> fire a <code>SettingsErrorEvent</code> at the <code>ImageCapture</code> object. </dd>
+    <em title="must" class="rfc2119">must</em> fire a <code>ImageCaptureErrorEvent</code> at the <code>ImageCapture</code> object whose <code>code</code> is set to SETTINGS_ERROR. </dd>
     <dt>void takePhoto ()</dt>
     <dd>When the <code>takePhoto()</code> method of an <code>ImageCapture</code> object is invoked,
 	then if the <code>MediaStreamTrack</code> provided in the contructor does not have the 
-          <code>kind</code> attribute set to "video" or if the <code>MediaStreamTrack</code>'s <code>readyState</code> is not "live", the UA <em title="must" class="rfc2119">must</em> fire a <code>PhotoErrorEvent</code> event at the <code>ImageCapture</code> object with a 
-          new <code>PhotoError</code> object whose <code>code</code> is set to INVALID_TRACK.  If the UA is unable to execute the <code>takePhoto()</code> method for any
-          other reason, then the UA <em title="must" class="rfc2119">must</em> fire a <code>PhotoErrorEvent</code> event at the <code>ImageCapture</code> object with a 
-          new <code>PhotoError</code> object whose <code>code</code> is set to PHOTO_ERROR.
+          <code>kind</code> attribute set to "video" or if the <code>MediaStreamTrack</code>'s <code>readyState</code> is not "live", the UA <em title="must" class="rfc2119">must</em> fire a <code>ImageCaptureErrorEvent</code> event at the <code>ImageCapture</code> object with a 
+          new <code>ImageCaptureError</code> object whose <code>code</code> is set to INVALID_TRACK.  If the UA is unable to execute the <code>takePhoto()</code> method for any
+          other reason (for example, upon invocation of multiple takePhoto() method calls in rapid succession), then the UA <em title="must" class="rfc2119">must</em> fire a <code>ImageCaptureErrorEvent</code> event at the <code>ImageCapture</code> object with a 
+          new <code>ImageCaptureError</code> object whose <code>code</code> is set to PHOTO_ERROR.
    Otherwise it <em title="must" class="rfc2119">must</em>
           queue a task, using the DOM manipulation task source, that runs the following steps:
 		<ol>
@@ -84,34 +80,18 @@
 				and then resume streaming.  In this case, the stopping and restarting of streaming <em title="should" class="rfc2119">should</em>
 				cause <code>mute</code> and <code>unmute</code> events to fire on the Track in question.  </li>
 	 <li>Raise a <code>BlobEvent</code> event containing the <code>Blob</code> to the <code>onphoto</code> event handler (if specified).</li></dd>
-     <dt>void clearFrameGrabber()</dt>
-     <dd>If the <code>frameGrabber()</code> method has been successfully invoked previously, the UA <em title="must" class="rfc2119">must</em>
-     immediately terminate the corresponding process.  Otherwise the method must immediately return without further action taking
-     place.</dd>
 	 <dt>void getFrame()</dt>
 	 <dd>When the <code>getFrame()</code> method of an <code>ImageCapture</code> object is invoked, then if the <code>MediaStreamTrack</code> provided in the contructor does not have the 
-          <code>kind</code> attribute set to "video" or if the <code>MediaStreamTrack</code>'s <code>readyState</code> is not "live", the UA <em title="must" class="rfc2119">must</em> fire a <code>FrameGrabErrorEvent</code> event at the <code>ImageCapture</code> object with a 
-          new <code>FrameError</code> object whose <code>code</code> is set to INVALID_TRACK. If the UA is unable to execute the <code>getFrame()</code> method for any
-          other reason, then the UA <em title="must" class="rfc2119">must</em> fire a <code>FrameGrabErrorEvent</code> event at the <code>ImageCapture</code> object with a 
-          new <code>FrameError</code> object whose <code>code</code> is set to FRAME_GRAB_ERROR.    Otherwise it <em title="must" class="rfc2119">must</em>
+          <code>kind</code> attribute set to "video" or if the <code>MediaStreamTrack</code>'s <code>readyState</code> is not "live", the UA <em title="must" class="rfc2119">must</em> fire a <code>ImageCaptureErrorEvent</code> event at the <code>ImageCapture</code> object with a 
+          new <code>ImageCaptureError</code> object whose <code>code</code> is set to INVALID_TRACK. If the UA is unable to execute the <code>getFrame()</code> method for any
+          other reason, then the UA <em title="must" class="rfc2119">must</em> fire a <code>ImageCaptureErrorEvent</code> event at the <code>ImageCapture</code> object with a 
+          new <code>ImageCaptureError</code> object whose <code>code</code> is set to FRAME_GRAB_ERROR.    Otherwise it <em title="must" class="rfc2119">must</em>
           queue a task, using the DOM manipulation task source, that runs the following steps:
 		<ol>
 			<li>Gather data from the <code>MediaStreamTrack</code> into a <code>ImageData</code> object (as defined in [[!CANVAS-2D]]) containing a single still frame in RGBA format. The <code>width</code> and <code>height</code> of the
 			<code>ImageData</code> object are derived from the constraints of the <code>MediaStreamTrack</code>.  </li>
 	 <li>Raise a <code>FrameGrabEvent</code> event containing the <code>ImageData</code> to the <code>onframegrab</code> event handler (if specified). {Note: Unlike <code>frameGrabber()</code>, <code>getFrame()</code> returns data only once upon being invoked.}</li>
 	 </dd>
-	 <dt>void frameGrabber()</dt>
-	 <dd>When the <code>frameGrabber()</code> method of an <code>ImageCapture</code> object is invoked, then if the <code>MediaStreamTrack</code> provided in the contructor does not have the 
-          <code>kind</code> attribute set to "video" or if the <code>MediaStreamTrack</code>'s <code>readyState</code> is not "live", the UA <em title="must" class="rfc2119">must</em> fire a <code>FrameGrabErrorEvent</code> event at the <code>ImageCapture</code> object with a 
-          new <code>FrameError</code> object whose <code>code</code> is set to INVALID_TRACK. If the UA is unable to execute the <code>frameGrabber()</code> method for any
-          other reason, then the UA <em title="must" class="rfc2119">must</em> fire a <code>FrameGrabErrorEvent</code> event at the <code>ImageCapture</code> object with a 
-          new <code>FrameError</code> object whose <code>code</code> is set to FRAME_GRAB_ERROR.    Otherwise it <em title="must" class="rfc2119">must</em>
-          queue a task, using the DOM manipulation task source, that starts a process
-          where the following steps are executed every time a new frame of image data is available:
-		<ol>
-			<li>Gather data from the <code>MediaStreamTrack</code> into a <code>ImageData</code> object (as defined in [[!CANVAS-2D]]) containing a single still frame in RGBA format. The <code>width</code> and <code>height</code> of the
-			<code>ImageData</code> object are derived from the constraints of the <code>MediaStreamTrack</code>.  </li>
-	 <li>Raise a <code>FrameGrabEvent</code> event containing the <code>ImageData</code> to the <code>onframegrab</code> event handler (if specified).</li></dd>
 	 </dl>
       
     <code>FrameGrabEvent</code>
@@ -128,19 +108,19 @@
     <dd>An <code>ImageData</code> object containing the data to deliver via this event.</dd>
     </dl>
 
-    <code>FrameGrabErrorEvent</code>
+    <code>ImageCaptureErrorEvent</code>
     --------------
-    <dl title='[Constructor(DOMString type, optional FrameGrabErrorEventInit frameGrabErrorInitDict)] interface FrameGrabErrorEvent : Event' class='idl'>
-    <dt>readonly attribute FrameError frameError</dt>
-    <dd>Returns a <code>FrameError</code> object whose <code>code</code> attribute indicates the type of error occurrence. </dd>
+    <dl title='[Constructor(DOMString type, optional ImageCaptureErrorEventInit imageCaptureErrorInitDict)] interface ImageCaptureErrorEvent : Event' class='idl'>
+    <dt>readonly attribute ImageCaptureError imageCaptureError</dt>
+    <dd>Returns a <code>ImageCaptureError</code> object whose <code>code</code> attribute indicates the type of error occurrence. </dd>
     </dl>
 
-    ##### <code>FrameGrabErrorEventInit</code> Dictionary
+    ##### <code>ImageCaptureErrorEventInit</code> Dictionary
     
-    <dl title='dictionary FrameGrabErrorEventInit : EventInit' class='idl'>
-    <dt>FrameError frameError</dt>
-    <dd>A <code>FrameError</code> object containing the data to deliver via this event.</dd>
-    </dl>    
+    <dl title='dictionary ImageCaptureErrorEventInit : EventInit' class='idl'>
+    <dt>ImageCaptureError imageCaptureError</dt>
+    <dd>A <code>ImageCaptureError</code> object containing the data to deliver via this event.</dd>
+    </dl>  
         
     <code>BlobEvent</code>
     --------------
@@ -156,20 +136,6 @@
     <dd>A <code>Blob</code> object containing the data to deliver via this event.</dd>
     </dl>
     
-    <code>PhotoErrorEvent</code>
-    --------------
-    <dl title='[Constructor(DOMString type, optional PhotoErrorEventInit photoErrorInitDict)] interface PhotoErrorEvent : Event' class='idl'>
-    <dt>readonly attribute PhotoError photoError</dt>
-    <dd>Returns a <code>PhotoError</code> object whose <code>code</code> attribute indicates the type of error occurrence. </dd>
-    </dl>
-
-    ##### <code>PhotoErrorEventInit</code> Dictionary
-    
-    <dl title='dictionary PhotErrorEventInit : EventInit' class='idl'>
-    <dt>PhotoError photoError</dt>
-    <dd>A <code>photoError</code> object containing the data to deliver via this event.</dd>
-    </dl>    
-    
     <code>SettingsChangeEvent</code>
     --------------
     <dl title='[Constructor(DOMString type, optional SettingsChangeEventInit photoSettingsInitDict)] interface PhotoSettingsEvent : Event' class='idl'>
@@ -182,24 +148,29 @@
     <dl title='dictionary SettingsChangeEventInit : EventInit' class='idl'>
     <dt>PhotoSettings photoSettings</dt>
     <dd>A <code>PhotoSettings</code> object containing the data to deliver via this event.</dd>
-    </dl>
+    </dl>  
     
-    <code>SettingsErrorEvent</code>
-    --------------
-    <dl title='[Constructor(DOMString type, optional SettingsErrorEventInit photoSettingsInitDict)] interface SettingsErrorEvent : Event' class='idl'>
-    <dt>readonly attribute PhotoSettings photoSettings</dt>
-    <dd>Returns a <code>PhotoSettings</code> object whose type attribute indicates the current photo settings. </dd>
-    </dl>
-    
-    ##### <code>SettingsErrorEventInit</code> Dictionary
-    
-    <dl title='dictionary SettingsErrorEventInit : EventInit' class='idl'>
-    <dt>PhotoSettings photoSettings</dt>
-    <dd>A <code>PhotoSettings</code> object containing the data to deliver via this event.</dd>
-    </dl>            
-    
-    <code>MediaSettingsRange</code>
+    <code>ImageCaptureError</code>
     -----------------
+    <p>The <code>ImageCaptureError</code> object is passed to an <code>onerror</code> event handler of an
+    <code>ImageCapture</code> object if an error occurred when the object was created or any of its methods were invoked.</p>         
+    <dl title='[NoInterfaceObject] interface ImageCaptureError' class='idl'>
+    <dt>const unsigned short FRAME_GRAB_ERROR=1</dt>
+    <dd>An <code>ImageCaptureError</code> object must set its <code>code</code> value to this constant if an error occurred upon invocation of the <code>getFrame()</code> method of the <code>ImageCapture</code> interface.</dd>
+    <dt>const unsigned short SETTINGS_ERROR=2</dt>
+    <dd>An <code>ImageCaptureError</code> object must set its <code>code</code> value to this constant if an error occurred upon invocation of the <code>setOptions()</code> method of the <code>ImageCapture</code> interface.</dd>
+    <dt>const unsigned short PHOTO_ERROR=3</dt>
+    <dd>An <code>ImageCaptureError</code> object must set its <code>code</code> value to this constant if an error occurred upon invocation of the <code>takePhoto()</code> method of the <code>ImageCapture</code> interface.</dd>
+    <dt>const unsigned short ERROR_UNKNOWN=4</dt>
+    <dd>An <code>ImageCaptureError</code> object must set its <code>code</code> value to this constant if an error occurred due to indeterminate cause upon invocation of any method of the <code>ImageCapture</code> interface.</dd>
+    <dt>readonly attribute unsigned short code</dt>
+    <dd>The <code>code</code> attribute returns the appropriate code for the error event, derived from the constants defined in the <code>ImageCaptureError</code> interface.</dd>
+    <dt>readonly attribute DOMString message</dt>
+    <dd>The <code>message</code> attribute must return an error message describing the details of the error encountered.</dd>
+    </dl>
+    
+    <section>
+    <h2><code>MediaSettingsRange</code></h2>
     <dl title='interface MediaSettingsRange' class='idl'>
     <dt>readonly attribute unsigned long max</dt>
     <dd>The maximum value of this setting</dd>
@@ -208,25 +179,83 @@
     <dt>readonly attribute unsigned long initial</dt>
     <dd>The current value of this setting</dd>
     </dl>
+    </section>
     
-    <code>MediaSettingsItem</code>
-    -----------------
+    <section>
+    <h2><code>MediaSettingsItem</code></h2>
     <p>The <code>MediaSettingsItem</code> interface is now defined, which allows for a single setting to be managed.</p>
     <dl title='interface MediaSettingsItem' class='idl'>
     <dt>readonly attribute any value</dt>
     <dd>Value of current setting.</dd>
     </dl>
     <p></p>
+    </section>
     
-    <code>PhotoSettingsOptions</code>
-    ---------------
+    <section>
+    <h2><code>PhotoSettingsOptions</code></h2>
     <p>The PhotoSettingsOptions attribute of the <code>ImageCapture</code> object provides
-    the photo-specific settings options and current settings values.</p>
+    the photo-specific settings options and current settings values.  The following definitions are assumed
+    for individual settings and are provided for information purposes:</p>
+    <ol>
+    <li><i>White balance mode</i> is a setting that cameras use to adjust for different color temperatures.  Color temperature is
+    the temperature of background light (measured in Kelvin normally).  This setting can also be automatically
+    determined by the implementation.  If 'automatic' mode is selected, then the Kelvin setting for White Balance Mode
+    may be overridden.  Typical temprature ranges for different modes are provided below:
+    <table border="1">
+    <tr>
+        <th>Mode</th>
+        <th>Kelvin range</th>
+    </tr>
+    <tr>
+        <td>incandescent</td>
+        <td>2500-3500</td>
+    </tr>
+    <tr>
+        <td>fluorescent</td>
+        <td>4000-5000</td>
+    </tr>
+    <tr>
+        <td>warm-fluorescent</td>
+        <td>5000-5500</td>
+    </tr>
+    <tr>
+        <td>daylight</td>
+        <td>5500-6500</td>
+    </tr>
+    <tr>
+        <td>cloudy-daylight</td>
+        <td>6500-8000</td>
+    </tr>
+    <tr>
+        <td>twilight</td>
+        <td>8000-9000</td>
+    </tr>
+    <tr>
+        <td>shade</td>
+        <td>9000-10000</td>
+    </tr>
+    </table>
+    </li>
+    <li><i>Exposure</i> is the amount of light allowed to fall on the photographic medium.  Auto-exposure mode is a camera setting
+    where the exposure levels are automatically adjusted by the implementation based on the subject of the photo.</li>
+    <li><i>Exposure Compensation</i> is a numeric camera setting that adjusts the exposure level from the current value used by the implementation.  This value can
+    be used to bias the exposure level enabled by auto-exposure.</li>
+    <li>The <i>ISO</i> setting of a camera describes the sensistivity of the camera to light.  It is a numeric value, where the lower the value
+    the greater the sensitivity.  This setting in most implementations relates to shutter speed, and is sometimes known as the ASA setting.</li>
+    <li><i>Red Eye Reduction</i> is a feature in cameras that is designed to limit or prevent the appearance of 
+    red pupils ("Red Eye") in photography subjects due prolonged exposure to a camera's flash.</li>
+    <li><i>Brightness</i> refers to the numeric camera setting that adjusts the perceived amount of light emitting from the photo object.  A higher brightness setting increases the intensity of darker areas in a scene while compressing the intensity of brighter parts of the scene.</li>
+    <li><i>Contrast</i> is the numeric camera setting that controls the difference in brightness between light and dark areas in a scene.  A higher contrast setting reflects an expansion in the difference in brightness.</li>
+    <li><i>Saturation</i> is a numeric camera setting that controls the intensity of color in a scene (i.e. the amount of gray in the scene).  Very low saturation levels will result in photo's closer to black-and-white.</li>
+    <li><i>Sharpness</i> is a numeric camera setting that controls the intensity of edges in a scene.  Higher sharpness settings result in higher edge intensity, while lower settings result in less contrast and blurrier edges (i.e. soft focus).</li>
+    </ol>
     <dl title='interface PhotoSettingsOptions' class='idl'>
-    <dt>attribute MediaSettingsItem whiteBalanceMode</dt>
+    <dt>attribute MediaSettingsItem autoWhiteBalanceMode</dt>
+    <dd>This reflects whether automated White Balance Mode selection is on or off, and is boolean - on is true</dd>
+    <dt>attribute MediaSettingsRange whiteBalanceMode</dt>
     <dd>This reflects the current white balance mode setting. Values are of type <code>WhiteBalanceModeEnum</code>.</dd>
-    <dt>attribute MediaSettingsItem autoExposureMode</dt>
-    <dd>This reflects the current auto exposure mode setting.  Values are of type <code>ExposureModeEnum</code>.</dd>
+    <dt>attribute ExposureMode autoExposureMode</dt>
+    <dd>This reflects the current auto exposure mode setting.  Values are of type <code>ExposureMode</code>.</dd>
     <dt>attribute MediaSettingsRange exposureCompensation</dt>
     <dd>This reflects the current exposure compensation setting and permitted range.  Values are numeric.</dd>
     <dt>attribute MediaSettingsRange iso</dt>
@@ -248,30 +277,10 @@
     <dd>This reflects the image width range supported by the UA and the current width setting.</dd>
     </dl>
     <p></p>
+    </section>
     
-    <code>WhiteBalanceModeEnum</code>
-    -----------------
-    <dl title='enum WhiteBalanceModeEnum' class='idl'>
-    <dt>auto</dt>
-    <dd>auto</dd>
-    <dt>incandescent</dt>
-    <dd>2500-3500 Kelvin</dd>
-    <dt>fluorescent</dt>
-    <dd>4000-5000 Kelvin</dd>
-    <dt>warm-fluorescent</dt>
-    <dd>5000-5500 Kelvin</dd>
-    <dt>daylight</dt>
-    <dd>5000-6500 Kelvin</dd>
-    <dt>cloudy-daylight</dt>
-    <dd>6500-8000 Kelvin</dd>
-    <dt>twilight</dt>
-    <dd>8000-9000 Kelvin</dd>
-    <dt>shade</dt>
-    <dd>9000-10000 Kelvin</dd>
-    </dl>
-    
-    <code>ExposureModeEnum</code>
-    -----------------
+    <section>
+    <h2><code>ExposureMode</code></h2>
     <dl title='enum ExposureModeEnum' class='idl'>
     <dt>frame-average</dt>
     <dd>Average of light information from entire scene</dd>
@@ -280,64 +289,41 @@
     <dt>spot-metering</dt>
     <dd>Spot-centered weighting</dd>
     </dl>
+    </section>
     
-    <code>PhotoSettings</code>
-    -----------------
-    <p>The <code>PhotoSettings</code> object is optionally passed into the <code>ImageCapture.setPhotoSettings()</code> method
+    <section>
+    <h2><code>PhotoSettings</code></h2>
+    <p>The <code>PhotoSettings</code> object is optionally passed into the <code>ImageCapture.setOptions()</code> method
     in order to modify capture device settings specific to still imagery.  Each of the attributes in this object
     are optional.</p>
     <dl title='dictionary PhotoSettings' class='idl'>
-    <dt>attribute any whiteBalanceModeSetting</dt>
-    <dd>This reflects the desired white balance mode setting. Acceptable values are of type <code>WhiteBalanceModeEnum</code>.</dd>
-    <dt>attribute any autoExposureModeSetting</dt>
+    <dt>attribute boolean autoWhiteBalanceMode</dt>
+    <dd>This reflects whether automatic White Balance Mode selection is desired.</dd>
+    <dt>attribute unsigned long whiteBalanceMode</dt>
+    <dd>This reflects the desired white balance mode setting.</dd>
+    <dt>attribute any autoExposureMode</dt>
     <dd>This reflects the desired auto exposure mode setting.  Acceptable values are of type <code>ExposureModeEnum</code>.</dd>
-    <dt>attribute unsigned long exposureCompensationSetting</dt>
+    <dt>attribute unsigned long exposureCompensation</dt>
     <dd>This reflects the desired exposure compensation setting.</dd>
-    <dt>attribute unsigned long isoSetting</dt>
+    <dt>attribute unsigned long iso</dt>
     <dd>This reflects the desired camera ISO setting.</dd>
     <dd>This feature reflects the current exposure level for recorded images. Values are numeric.</dd>
-    <dt>attribute boolean redEyeReductionSetting</dt>
+    <dt>attribute boolean redEyeReduction</dt>
     <dd>This reflects whether camera red eye reduction is desired</dd>
-    <dt>attribute unsigned long brightnessSetting</dt>
+    <dt>attribute unsigned long brightness</dt>
     <dd>This reflects the desired brightness setting of the camera.</dd>
-    <dt>attribute unsigned long constrastSetting</dt>
+    <dt>attribute unsigned long constrast</dt>
     <dd>This reflects the desired contrast setting of the camera.</dd>
-    <dt>attribute unsigned long saturationSetting</dt>
+    <dt>attribute unsigned long saturation</dt>
     <dd>This reflects the desired saturation setting of the camera.</dd>
-    <dt>attribute unsigned long sharpnessSetting</dt>
+    <dt>attribute unsigned long sharpness</dt>
     <dd>This reflects the desired sharpness setting of the camera.</dd>
-    <dt>attribute unsigned long imageHeightSetting</dt>
+    <dt>attribute unsigned long imageHeight</dt>
     <dd>This reflects the desired image height.  The UA <em title="must" class="rfc2119">must</em> select the closest height value this setting if it supports a discrete set of height options. </dd>
-    <dt>attribute unsigned long imageWidthSetting</dt>
+    <dt>attribute unsigned long imageWidth</dt>
     <dd>This reflects the desired image width. The UA <em title="must" class="rfc2119">must</em> select the closest width value this setting if it supports a discrete set of width options.</dd>
     </dl>
-
-    <code>FrameError</code>
-    -----------------
-    <p>The <code>FrameError</code> object is passed to an <code>onframegraberror</code> event handler of an
-    <code>ImageCapture</code> object if an error occurred when the <code>getFrame()</code> method was invoked.</p>
-    <dl title='interface FrameError' class='idl'>
-    <dt>readonly attribute unsigned short code</dt>
-    <dd>Returns appropriate error code derived from list of pre-defined constants</dd>
-    <dt>const unsigned short FRAME_GRAB_ERROR=0</dt>
-    <dd>value of <code>code</code> for when an error occurred while capturing the frame</dd>
-    <dt>const unsigned short INVALID_TRACK=1</dt>
-    <dd>value of <code>code</code> for when the <code>MediaStreamTrack</code> is not suitable for frame capture</dd>
-    </dl>
-        
-    <code>PhotoError</code>
-    -----------------
-    <p>The <code>PhotoError</code> object is passed to an <code>onphotoerror</code> event handler of an
-    <code>ImageCapture</code> object if an error occurred when the <code>takePhoto()</code> method was invoked.</p>
-    <dl title='interface PhotoError' class='idl'>
-    <dt>readonly attribute unsigned short code</dt>
-    <dd>Returns appropriate error code derived from list of pre-defined constants</dd>
-    <dt>const unsigned short PHOTO_ERROR=0</dt>
-    <dd>value of <code>code</code> for when an error occurred while capturing the image</dd>
-    <dt>const unsigned short INVALID_TRACK=1</dt>
-    <dd>value of <code>code</code> for when the <code>MediaStreamTrack</code> is not suitable for image capture</dd>
-    </dl>
-
+    </section>
         
     Examples
     -------
@@ -353,7 +339,7 @@
           if (pictureDevice) {
                 pictureDevice.onphoto = showPicture;
                 if (pictureDevice.photoSettingsOptions.redEyeReduction) {
-                   pictureDevice.setPhotoSettings({redEyeReductionSetting:true});
+                   pictureDevice.setOptions({redEyeReductionSetting:true});
                    }
                 else
                    console.log('No red eye reduction');
